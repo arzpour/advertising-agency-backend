@@ -1,27 +1,25 @@
-import { Schema, model, Document } from "mongoose";
+import { Schema, Document, model } from "mongoose";
 
-export interface IProject extends Document {
+export interface IBlog extends Document {
   title: string;
   description: string;
-  category: string;
-  url: string;
   thumbnail: string;
   images: string[];
+  time: Date;
   createdAt: Date;
   updatedAt: Date;
 }
 
-const projectSchema = new Schema<IProject>({
+const blogSchema = new Schema<IBlog>({
   title: { type: String, required: true },
   description: String,
-  category: String,
-  url: String,
   thumbnail: { type: String, required: true },
   images: { type: [String] },
+  time: { type: Date, default: Date.now },
   createdAt: { type: Date, default: Date.now },
   updatedAt: { type: Date, default: Date.now },
 });
 
-const Project = model<IProject>("project", projectSchema);
+const Blog = model<IBlog>("blog", blogSchema);
 
-export default Project;
+export default Blog;
