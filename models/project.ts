@@ -1,15 +1,4 @@
-import { Schema, model, Document } from "mongoose";
-
-export interface IProject extends Document {
-  title: string;
-  description: string;
-  category: string;
-  url: string;
-  thumbnail: string;
-  images: string[];
-  createdAt: Date;
-  updatedAt: Date;
-}
+import { Schema, model } from "mongoose";
 
 const projectSchema = new Schema<IProject>({
   title: { type: String, required: true },
