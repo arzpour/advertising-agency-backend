@@ -1,10 +1,13 @@
-import { Request, Response } from "express";
+import { NextFunction, Request, Response } from "express";
 import Project from "../models/project";
 import { ApiFeatures } from "../utils/api-features";
+import { AppError } from "../utils/app-error";
 
-// type getProjects = (req: Request, res: Response) => Promise<void>;
-
-const getProjects = async (req: Request, res: Response): Promise<void> => {
+const getProjects = async (
+  req: Request,
+  res: Response,
+  next: NextFunction
+): Promise<void> => {
   try {
     const projectModel = new ApiFeatures<IProject>(
       Project.find({}),
@@ -15,7 +18,7 @@ const getProjects = async (req: Request, res: Response): Promise<void> => {
       .filter()
       .sort();
 
-    const projects = await projectModel.getQuery;
+    const projects = projectModel.getQuery();
 
     const { page = 1, limit = 10 } = req.query;
 
@@ -38,19 +41,34 @@ const getProjects = async (req: Request, res: Response): Promise<void> => {
     });
   } catch (error) {
     if (error instanceof Error) {
-      res.status(500).json({ error: error.message });
+      return next(new AppError(500, error.message));
     }
   }
 };
 
-// const getProjectById = async (req: Request, res: Response) => {
-//   const { id } = req.params;
+const getProjectById = async (
+  req: Request,
+  res: Response,
+  next: NextFunction
+) => {
+  const { id: projectId } = req.params;
 
-//   try {
-//     await Project.findById(id);
-//   } catch (error) {
-//     console.log("🚀 ~ getProject ~ error:", error);
-//   }
-// };
+  try {
+    const projectById = await Project.findById(projectId);
 
-export { getProjects };
+    if (!projectById) {
+      return next(new AppError(404, `project ${projectId} not found`));
+    }
+
+    res.status(200).json({
+      status: "success",
+      data: { projectById },
+    });
+  } catch (error) {
+    if (error instanceof Error) {
+      return next(new AppError(500, error.message));
+    }
+  }
+};
+
+export { getProjects, getProjectById };
