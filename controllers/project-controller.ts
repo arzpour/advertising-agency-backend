@@ -3,6 +3,12 @@ import Project from "../models/project";
 import { ApiFeatures } from "../utils/api-features";
 import { AppError } from "../utils/app-error";
 import Category from "../models/category";
+import {
+  imagesDefault,
+  resizeImages,
+  resizeThumbnail,
+  thumbnailsDefault,
+} from "../utils/upload-images";
 
 const getProjects = async (req: Request, res: Response, next: NextFunction) => {
   try {
@@ -89,6 +95,21 @@ const addProject = async (req: Request, res: Response, next: NextFunction) => {
       description,
       category: categoryId,
     });
+
+    const thumbnail = await resizeThumbnail(
+      "projects",
+      project.id,
+      req.files as IUploadFiles
+    );
+
+    const images = await resizeImages(
+      "projects",
+      project.id,
+      req.files as IUploadFiles
+    );
+
+    project.thumbnail = thumbnail ?? thumbnailsDefault("projects");
+    project.images = images.length ? images : imagesDefault("projects");
 
     await project.save({ validateModifiedOnly: true });
 
