@@ -2,12 +2,9 @@ import { NextFunction, Request, Response } from "express";
 import Project from "../models/project";
 import { ApiFeatures } from "../utils/api-features";
 import { AppError } from "../utils/app-error";
+import Category from "../models/category";
 
-const getProjects = async (
-  req: Request,
-  res: Response,
-  next: NextFunction
-): Promise<void> => {
+const getProjects = async (req: Request, res: Response, next: NextFunction) => {
   try {
     const projectModel = new ApiFeatures<IProject>(
       Project.find({}),
@@ -57,7 +54,7 @@ const getProjectById = async (
     const projectById = await Project.findById(projectId);
 
     if (!projectById) {
-      return next(new AppError(404, `project ${projectId} not found`));
+      return next(new AppError(404, `project: ${projectId} not found`));
     }
 
     res.status(200).json({
@@ -71,4 +68,37 @@ const getProjectById = async (
   }
 };
 
-export { getProjects, getProjectById };
+const addProject = async (req: Request, res: Response, next: NextFunction) => {
+  try {
+    const { name: projectName, description, category: categoryId } = req.body;
+
+    const isProjectExist = await Project.exists({ projectName });
+
+    if (!!isProjectExist) {
+      return next(new AppError(409, "project title already exists"));
+    }
+
+    const category = await Category.findById(categoryId);
+
+    if (!category) {
+      return next(new AppError(404, `category: ${categoryId} not found`));
+    }
+
+    const project = await Project.create({
+      name: projectName,
+      description,
+      category: categoryId,
+    });
+
+    await project.save({ validateModifiedOnly: true });
+
+    res.status(201).json({
+      status: "success",
+      data: { project },
+    });
+  } catch (error) {
+    next(error);
+  }
+};
+
+export { getProjects, getProjectById, addProject };

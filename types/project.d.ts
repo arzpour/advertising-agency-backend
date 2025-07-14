@@ -1,8 +1,7 @@
 interface IProject extends Document {
-  title: string;
+  name: string;
   description: string;
-  category: string;
-  url: string;
+  category: ObjectId;
   thumbnail: string;
   images: string[];
   createdAt: Date;
