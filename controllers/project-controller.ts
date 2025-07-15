@@ -132,7 +132,11 @@ const editProjectById = async (
   try {
     const { id: projectId } = req.params;
 
-    const { name: projectName, description, category: categoryId } = req.body;
+    const {
+      name: projectName = null,
+      description = null,
+      category: categoryId = null,
+    } = req.body;
 
     const project = await Project.findById(projectId).populate("category");
 
