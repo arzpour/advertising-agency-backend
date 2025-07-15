@@ -4,7 +4,9 @@ import sharp from "sharp";
 
 export const thumbnailsDefault = (title: string) =>
   `${title}-thumbnails-default.jpeg`;
-export const imagesDefault = (title: string) => `${title}-images-default.jpeg`;
+export const imagesDefault = (title: string) => [
+  `${title}-images-default.jpeg`,
+];
 
 export const uploadImages = multerUpload.fields([
   { name: "thumbnail", maxCount: 1 },
@@ -42,7 +44,7 @@ export const resizeImages = async (
 ) => {
   const { images = [] } = files;
 
-  if (!images.length) return images;
+  if (!images.length) return [];
 
   const resizedImages = await Promise.all(
     images.map(async (image, index: number) => {

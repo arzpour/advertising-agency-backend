@@ -9,6 +9,8 @@ import {
   resizeThumbnail,
   thumbnailsDefault,
 } from "../utils/upload-images";
+import { constants, access, unlink } from "node:fs/promises";
+import { join } from "node:path";
 
 const getProjects = async (req: Request, res: Response, next: NextFunction) => {
   try {
@@ -122,4 +124,175 @@ const addProject = async (req: Request, res: Response, next: NextFunction) => {
   }
 };
 
-export { getProjects, getProjectById, addProject };
+const editProjectById = async (
+  req: Request,
+  res: Response,
+  next: NextFunction
+) => {
+  try {
+    const { id: projectId } = req.params;
+
+    const { name: projectName, description, category: categoryId } = req.body;
+
+    const project = await Project.findById(projectId).populate("category");
+
+    if (!project) {
+      return next(new AppError(404, `project: ${projectId} not found`));
+    }
+
+    const duplicateProject = await Project.findOne({ name: projectName });
+
+    if (!!duplicateProject && duplicateProject?.name !== project?.name) {
+      return next(
+        new AppError(
+          409,
+          "project name is already exists. choose a different project name"
+        )
+      );
+    }
+
+    let category = await Category.findById(categoryId);
+
+    if (!category && !!categoryId) {
+      return next(new AppError(404, `category: ${categoryId} not found`));
+    }
+
+    category ??= project?.category;
+
+    if (!category) {
+      return next(new AppError(400, `category not provided or found`));
+    }
+
+    const thumbnail = await resizeThumbnail(
+      "projects",
+      projectId,
+      req.files as IUploadFiles
+    );
+
+    if (!!thumbnail && project?.thumbnail !== thumbnailsDefault("projects")) {
+      await access(
+        join(
+          __dirname,
+          "../public/images/projects/thumbnails",
+          project?.thumbnail
+        ),
+        constants.F_OK
+      );
+      await unlink(
+        join(
+          __dirname,
+          "../public/images/projects/thumbnails",
+          project?.thumbnail
+        )
+      );
+    }
+
+    const images = await resizeImages(
+      "projects",
+      projectId,
+      req.files as IUploadFiles
+    );
+
+    const defaultImages = imagesDefault("projects");
+    const hasDefaultImages = defaultImages.every((img) =>
+      project.images.includes(img)
+    );
+
+    if (!hasDefaultImages) {
+      for (const image of project.images) {
+        await access(
+          join(__dirname, "../public/images/projects/images", image),
+          constants.F_OK
+        );
+        await unlink(
+          join(__dirname, "../public/images/projects/images", image)
+        );
+      }
+    }
+
+    project.category = category._id;
+    project.name = projectName ?? project.name;
+    project.description = description ?? project.description;
+    project.thumbnail = thumbnail ?? project.thumbnail;
+    project.images = images.length ? images : project.images;
+
+    await project.save({ validateBeforeSave: true });
+
+    res.status(200).json({
+      status: "success",
+      data: { project },
+    });
+  } catch (error) {
+    if (error instanceof Error) {
+      return next(new AppError(500, error.message));
+    }
+  }
+};
+
+const removeProjectById = async (
+  req: Request,
+  res: Response,
+  next: NextFunction
+) => {
+  try {
+    const { id: projectId } = req.params;
+
+    const project = await Project.findByIdAndDelete(projectId);
+
+    if (!project) {
+      return next(new AppError(404, `project: ${projectId} not found`));
+    }
+
+    if (project.thumbnail !== thumbnailsDefault("project")) {
+      await access(
+        join(
+          __dirname,
+          "../public/images/projects/thumbnails",
+          project?.thumbnail
+        ),
+        constants.F_OK
+      );
+      await unlink(
+        join(
+          __dirname,
+          "../public/images/projects/thumbnails",
+          project?.thumbnail
+        )
+      );
+    }
+
+    const defaultImages = await imagesDefault("projects");
+    const hasDefaultImages = defaultImages.every((img) =>
+      project.images.includes(img)
+    );
+
+    if (!hasDefaultImages) {
+      for (const image of project.images) {
+        await access(
+          join(__dirname, "../public/images/projects/images", image),
+          constants.F_OK
+        );
+        await unlink(
+          join(__dirname, "../public/images/projects/images", image)
+        );
+      }
+    }
+
+    res.status(200).json({
+      status: "success",
+      data: { project },
+    });
+  } catch (error) {
+    if (error instanceof Error) {
+      return next(new AppError(500, error.message));
+    }
+  }
+};
+
+export {
+  getProjects,
+  getProjectById,
+  addProject,
+  editProjectById,
+  removeProjectById,
+};
