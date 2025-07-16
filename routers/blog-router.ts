@@ -31,3 +31,5 @@ router.patch(
 );
 
 router.delete("/:id", asyncHandler(removeBlogById));
+
+export default router;

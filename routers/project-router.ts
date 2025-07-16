@@ -30,3 +30,5 @@ router.patch(
   asyncHandler(editProjectById)
 );
 router.delete("/id", asyncHandler(removeProjectById));
+
+export default router;

@@ -15,3 +15,5 @@ router.get("/", asyncHandler(getTickets));
 router.get("/:id", asyncHandler(getTicketById));
 router.get("/phone/:phoneNumber", asyncHandler(getTicketsByPhone));
 router.post("/", validator(ticketValidationSchema), asyncHandler(addTicket));
+
+export default router;
