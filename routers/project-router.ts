@@ -7,9 +7,9 @@ import {
   removeProjectById,
 } from "../controllers/project-controller";
 import { uploadImages } from "../utils/upload-images";
-import { projectValidationSchema } from "../validations/project-validation";
 import asyncHandler from "../utils/async-handler";
 import validator from "../validations/validator";
+import projectValidationSchema from "../validations/project-validation";
 
 const router = Router();
 
