@@ -14,22 +14,19 @@ import { uploadImages } from "../utils/upload-images";
 const router = Router();
 
 router.get("/", asyncHandler(getBlogs));
-router.get("/:id", asyncHandler(getBlogById));
-
 router.post(
   "/",
   uploadImages,
   validator(blogValidationSchema),
   asyncHandler(addBlog)
 );
-
+router.get("/:id", asyncHandler(getBlogById));
 router.patch(
   "/:id",
   uploadImages,
   validator(blogValidationSchema),
   asyncHandler(editBlogById)
 );
-
 router.delete("/:id", asyncHandler(removeBlogById));
 
 export default router;

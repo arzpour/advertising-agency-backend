@@ -14,21 +14,19 @@ import projectValidationSchema from "../validations/project-validation";
 const router = Router();
 
 router.get("/", asyncHandler(getProjects));
-router.get("/:id", asyncHandler(getProjectById));
-
 router.post(
   "/",
   uploadImages,
   validator(projectValidationSchema),
   asyncHandler(addProject)
 );
-
+router.get("/:id", asyncHandler(getProjectById));
 router.patch(
-  "/id",
+  "/:id",
   uploadImages,
   validator(projectValidationSchema),
   asyncHandler(editProjectById)
 );
-router.delete("/id", asyncHandler(removeProjectById));
+router.delete("/:id", asyncHandler(removeProjectById));
 
 export default router;

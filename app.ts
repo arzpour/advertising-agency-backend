@@ -17,13 +17,12 @@ app.use(express.static(join(__dirname, "./public")));
 // routers
 app.use("/api", apiRouters);
 
-// error handler
-app.use(globalErrorHandler);
-
 // 404 error handler
-
 app.all("*", (req, res, next) => {
   next(new AppError(404, `can't find ${req.method} ${req.originalUrl}`));
 });
+
+// error handler
+app.use(globalErrorHandler);
 
 export { app };

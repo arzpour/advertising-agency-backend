@@ -12,8 +12,8 @@ import ticketValidationSchema from "../validations/ticket-validation";
 const router = Router();
 
 router.get("/", asyncHandler(getTickets));
-router.get("/:id", asyncHandler(getTicketById));
-router.get("/phone/:phoneNumber", asyncHandler(getTicketsByPhone));
 router.post("/", validator(ticketValidationSchema), asyncHandler(addTicket));
+router.get("/phone/:phoneNumber", asyncHandler(getTicketsByPhone));
+router.get("/:id", asyncHandler(getTicketById));
 
 export default router;
