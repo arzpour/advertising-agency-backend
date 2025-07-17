@@ -10,6 +10,8 @@ import {
 import { constants, access, unlink } from "node:fs/promises";
 import { join } from "node:path";
 import Blog from "../models/blog";
+import { IBlog } from "../types/blog";
+import { IQueryString, IUploadFiles } from "../types/global";
 
 const getBlogs = async (req: Request, res: Response, next: NextFunction) => {
   try {

@@ -1,5 +1,6 @@
 import { model, Schema } from "mongoose";
 import bcrypt from "bcrypt";
+import { IUser } from "../types/user";
 
 const passwordRegex = /^(?=.*[a-zA-Z])(?=.*\d)/;
 

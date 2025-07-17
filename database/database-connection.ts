@@ -2,7 +2,7 @@ import { connect, connection } from "mongoose";
 
 const connectToDatabase = async () => {
   try {
-    await connect(process.env.NEXT_PUBLIC_DATABASE_URL as string);
+    await connect(process.env.DATABASE_URL as string);
   } catch (error) {
     console.log(`[-] database connection > ${error}`);
     console.info(`[i] proccess terminated`);

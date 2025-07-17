@@ -1,4 +1,5 @@
 import { Query } from "mongoose";
+import { IQueryString } from "../types/global";
 
 class ApiFeatures<T> {
   private model: Query<T[], T>;

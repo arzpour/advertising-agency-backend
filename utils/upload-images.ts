@@ -1,6 +1,7 @@
 import { join } from "path";
 import multerUpload from "./multer-config";
 import sharp from "sharp";
+import { IUploadFiles } from "../types/global";
 
 export const thumbnailsDefault = (title: string) =>
   `${title}-thumbnails-default.jpeg`;

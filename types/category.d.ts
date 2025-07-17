@@ -1,4 +1,4 @@
-interface ICategory extends Document {
+export interface ICategory extends Document {
   name: string;
   icon: string;
 }

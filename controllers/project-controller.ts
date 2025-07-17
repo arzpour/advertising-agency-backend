@@ -11,6 +11,8 @@ import {
 } from "../utils/upload-images";
 import { constants, access, unlink } from "node:fs/promises";
 import { join } from "node:path";
+import { IQueryString, IUploadFiles } from "../types/global";
+import { IProject } from "../types/project";
 
 const getProjects = async (req: Request, res: Response, next: NextFunction) => {
   try {

@@ -1,4 +1,4 @@
-interface IProject extends Document {
+export interface IProject extends Document {
   name: string;
   description: string;
   category: ObjectId;

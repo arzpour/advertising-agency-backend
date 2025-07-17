@@ -1,4 +1,4 @@
-import UserSchema from "../models/user-model";
+import UserSchema from "../models/user";
 
 const addAdmin = async () => {
   const isAdminExist = await UserSchema.findOne({ role: "ADMIN" });
@@ -8,12 +8,12 @@ const addAdmin = async () => {
   }
 
   await UserSchema.create({
-    firstname: process.env.NEXT_PUBLIC_ADMIN_FIRSTNAME,
-    lastname: process.env.NEXT_PUBLIC_ADMIN_LASTNAME,
-    username: process.env.NEXT_PUBLIC_ADMIN_USERNAME,
-    password: process.env.NEXT_PUBLIC_ADMIN_PASSWORD,
-    phoneNumber: process.env.NEXT_PUBLIC_ADMIN_PHONE_NUMBER,
-    address: process.env.NEXT_PUBLIC_ADMIN_ADDRESS,
+    firstname: process.env.ADMIN_FIRSTNAME,
+    lastname: process.env.ADMIN_LASTNAME,
+    username: process.env.ADMIN_USERNAME,
+    password: process.env.ADMIN_PASSWORD,
+    phoneNumber: process.env.ADMIN_PHONE_NUMBER,
+    address: process.env.ADMIN_ADDRESS,
     role: "ADMIN",
   });
 

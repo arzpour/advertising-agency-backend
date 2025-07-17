@@ -1,6 +1,7 @@
-interface ITicket extends Document {
+export interface ITicket extends Document {
   phoneNumber: string;
   message: string;
   status: string;
-  createdAt: Date;
+  createdAt?: Date;
+  updatedAt?: Date;
 }

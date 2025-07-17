@@ -2,6 +2,8 @@ import { NextFunction, Request, Response } from "express";
 import { ApiFeatures } from "../utils/api-features";
 import { AppError } from "../utils/app-error";
 import Ticket from "../models/ticket";
+import { ITicket } from "../types/ticket";
+import { IQueryString } from "../types/global";
 
 const getTickets = async (req: Request, res: Response, next: NextFunction) => {
   try {

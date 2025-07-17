@@ -1,4 +1,4 @@
-interface IBlog extends Document {
+export interface IBlog extends Document {
   title: string;
   description: string;
   thumbnail: string;

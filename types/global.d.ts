@@ -1,4 +1,4 @@
-interface IQueryString {
+export interface IQueryString {
   page?: string;
   limit?: string;
   sort?: string;
@@ -6,7 +6,7 @@ interface IQueryString {
   [key: string]: string | string[] | undefined;
 }
 
-interface IUploadFiles {
+export interface IUploadFiles {
   thumbnail?: Express.Multer.File[];
   images?: Express.Multer.File[];
 }
