@@ -1,4 +1,4 @@
-import { Schema, model, Document } from "mongoose";
+import { Schema, model } from "mongoose";
 
 const ticketSchema = new Schema<ITicket>({
   phoneNumber: { type: String, required: true },
