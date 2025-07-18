@@ -1,13 +1,13 @@
-import UserSchema from "../models/user";
+import User from "../models/user";
 
 const addAdmin = async () => {
-  const isAdminExist = await UserSchema.findOne({ role: "ADMIN" });
+  const isAdminExist = await User.findOne({ role: "ADMIN" });
 
   if (isAdminExist) {
     return console.info("[i] admin already exists");
   }
 
-  await UserSchema.create({
+  await User.create({
     firstname: process.env.ADMIN_FIRSTNAME,
     lastname: process.env.ADMIN_LASTNAME,
     username: process.env.ADMIN_USERNAME,

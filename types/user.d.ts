@@ -6,7 +6,8 @@ export interface IUser {
   phoneNumber: string;
   address: string;
   role: string;
-  refreshToken: string;
+  refreshToken: string | null;
   createdAt?: Date;
   updatedAt?: Date;
+  comparePassword(candidatePassword: string): Promise<boolean>;
 }
