@@ -8,6 +8,7 @@ const categorySchema = new Schema<ICategory>({
     unique: true,
     required: [true, "name is required"],
   },
+  description: String,
   icon: {
     type: String,
     trim: true,

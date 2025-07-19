@@ -3,8 +3,13 @@ import { IBlog } from "../types/blog";
 
 const blogSchema = new Schema<IBlog>(
   {
-    title: { type: String, required: true },
+    name: { type: String, required: true },
     description: String,
+    category: {
+      type: Schema.Types.ObjectId,
+      ref: "Category",
+      required: [true, "category is required"],
+    },
     thumbnail: { type: String, required: true },
     images: { type: [String] },
   },

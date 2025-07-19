@@ -25,7 +25,7 @@ const getProjects = async (req: Request, res: Response, next: NextFunction) => {
       .filter()
       .sort();
 
-    const projects = projectModel.getQuery();
+    const projects = await projectModel.getQuery();
 
     const { page = 1, limit = 10 } = req.query;
 

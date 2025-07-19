@@ -1,6 +1,7 @@
 export interface IBlog extends Document {
-  title: string;
+  name: string;
   description: string;
+  category: ObjectId;
   thumbnail: string;
   images: string[];
   createdAt: Date;

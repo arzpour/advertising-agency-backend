@@ -12,6 +12,7 @@ import { join } from "node:path";
 import Blog from "../models/blog";
 import { IBlog } from "../types/blog";
 import { IQueryString, IUploadFiles } from "../types/global";
+import Category from "../models/category";
 
 const getBlogs = async (req: Request, res: Response, next: NextFunction) => {
   try {
@@ -75,17 +76,24 @@ const getBlogById = async (req: Request, res: Response, next: NextFunction) => {
 
 const addBlog = async (req: Request, res: Response, next: NextFunction) => {
   try {
-    const { title: blogTitle, description } = req.body;
+    const { name: blogTitle, description, category: categoryId } = req.body;
 
     const isBlogExist = await Blog.exists({ blogTitle });
 
     if (!!isBlogExist) {
-      return next(new AppError(409, "blog title already exists"));
+      return next(new AppError(409, "blog name already exists"));
+    }
+
+    const category = await Category.findById(categoryId);
+
+    if (!category) {
+      return next(new AppError(404, `category: ${categoryId} not found`));
     }
 
     const blog = await Blog.create({
-      title: blogTitle,
+      name: blogTitle,
       description,
+      category: categoryId,
     });
 
     const thumbnail = await resizeThumbnail(
@@ -122,7 +130,11 @@ const editBlogById = async (
   try {
     const { id: blogId } = req.params;
 
-    const { title: blogTitle = null, description = null } = req.body;
+    const {
+      name: blogTitle = null,
+      description = null,
+      category: categoryId = null,
+    } = req.body;
 
     const blog = await Blog.findById(blogId).populate("category");
 
@@ -130,15 +142,27 @@ const editBlogById = async (
       return next(new AppError(404, `blog: ${blogId} not found`));
     }
 
-    const duplicateBlog = await Blog.findOne({ title: blogTitle });
+    const duplicateBlog = await Blog.findOne({ name: blogTitle });
 
-    if (!!duplicateBlog && duplicateBlog?.title !== blog?.title) {
+    if (!!duplicateBlog && duplicateBlog?.name !== blog?.name) {
       return next(
         new AppError(
           409,
-          "blog title is already exists. choose a different blog title"
+          "blog name is already exists. choose a different blog name"
         )
       );
+    }
+
+    let category = await Category.findById(categoryId);
+
+    if (!category && !!categoryId) {
+      return next(new AppError(404, `category: ${categoryId} not found`));
+    }
+
+    category ??= blog?.category;
+
+    if (!category) {
+      return next(new AppError(400, `category not provided or found`));
     }
 
     const thumbnail = await resizeThumbnail(
@@ -178,8 +202,9 @@ const editBlogById = async (
       }
     }
 
-    blog.title = blogTitle ?? blog.title;
+    blog.name = blogTitle ?? blog.name;
     blog.description = description ?? blog.description;
+    blog.category = category._id;
     blog.thumbnail = thumbnail ?? blog.thumbnail;
     blog.images = images.length ? images : blog.images;
 
