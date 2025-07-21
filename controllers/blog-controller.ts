@@ -76,9 +76,9 @@ const getBlogById = async (req: Request, res: Response, next: NextFunction) => {
 
 const addBlog = async (req: Request, res: Response, next: NextFunction) => {
   try {
-    const { name: blogTitle, description, category: categoryId } = req.body;
+    const { name: blogName, description, category: categoryId } = req.body;
 
-    const isBlogExist = await Blog.exists({ blogTitle });
+    const isBlogExist = await Blog.exists({ blogName });
 
     if (!!isBlogExist) {
       return next(new AppError(409, "blog name already exists"));
@@ -91,7 +91,7 @@ const addBlog = async (req: Request, res: Response, next: NextFunction) => {
     }
 
     const blog = await Blog.create({
-      name: blogTitle,
+      name: blogName,
       description,
       category: categoryId,
     });
@@ -131,7 +131,7 @@ const editBlogById = async (
     const { id: blogId } = req.params;
 
     const {
-      name: blogTitle = null,
+      name: blogName = null,
       description = null,
       category: categoryId = null,
     } = req.body;
@@ -142,7 +142,7 @@ const editBlogById = async (
       return next(new AppError(404, `blog: ${blogId} not found`));
     }
 
-    const duplicateBlog = await Blog.findOne({ name: blogTitle });
+    const duplicateBlog = await Blog.findOne({ name: blogName });
 
     if (!!duplicateBlog && duplicateBlog?.name !== blog?.name) {
       return next(
@@ -202,7 +202,7 @@ const editBlogById = async (
       }
     }
 
-    blog.name = blogTitle ?? blog.name;
+    blog.name = blogName ?? blog.name;
     blog.description = description ?? blog.description;
     blog.category = category._id;
     blog.thumbnail = thumbnail ?? blog.thumbnail;

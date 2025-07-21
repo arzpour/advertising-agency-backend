@@ -10,8 +10,16 @@ const blogSchema = new Schema<IBlog>(
       ref: "Category",
       required: [true, "category is required"],
     },
-    thumbnail: { type: String, required: true },
-    images: { type: [String] },
+    thumbnail: {
+      type: String,
+      trim: true,
+      default: "blogs-thumbnails-default.jpeg",
+    },
+    images: {
+      type: [String],
+      trim: true,
+      default: ["blogs-images-default.jpeg"],
+    },
   },
   {
     timestamps: true,
