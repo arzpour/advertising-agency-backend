@@ -74,12 +74,8 @@ const login = async (req: Request, res: Response, next: NextFunction) => {
 
   const { accessToken, refreshToken } = await signToken(user.id);
 
-  
-
   user.refreshToken = refreshToken;
   await user.save({ validateBeforeSave: false });
-
-
 
   res.status(200).json({
     status: "success",
@@ -157,11 +153,6 @@ const protect = asyncHandler(
 
     const token = authorization.split(" ")[1];
 
-    // const decoded = await promisify(jwt.verify)(
-    //   token,
-    //   process.env.JWT_ACCESS_TOKEN_SECRET
-    // );
-
     const decoded = await verifyAsync(
       token,
       process.env.JWT_ACCESS_TOKEN_SECRET!
@@ -178,7 +169,6 @@ const protect = asyncHandler(
       );
     }
 
-    // req.userId = user._id;
     req.body.userId = user._id.toString();
 
     next();

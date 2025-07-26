@@ -2,6 +2,8 @@ import { join } from "path";
 import multerUpload from "./multer-config";
 import sharp from "sharp";
 import { IUploadFiles } from "../types/global";
+import { existsSync } from "fs";
+import { mkdir } from "fs/promises";
 
 export const thumbnailsDefault = (title: string) =>
   `${title}-thumbnails-default.jpeg`;
@@ -24,6 +26,11 @@ export const resizeThumbnail = async (
   if (!thumbnail.length) return null;
 
   const thumbnailFileName = `${title}-${id}-${Date.now()}.jpeg`;
+  const thumbnailPath = join(__dirname, `../public/images/${title}/thumbnails`);
+
+  if (!existsSync(thumbnailPath)) {
+    await mkdir(thumbnailPath, { recursive: true });
+  }
 
   await sharp(thumbnail[0].buffer)
     .resize(1500, 800)
@@ -50,6 +57,11 @@ export const resizeImages = async (
   const resizedImages = await Promise.all(
     images.map(async (image, index: number) => {
       const imageFileName = `${title}-${id}-${Date.now()}-${index + 1}.jpeg`;
+      const imagesPath = join(__dirname, `../public/images/${title}/images`);
+
+      if (!existsSync(imagesPath)) {
+        await mkdir(imagesPath, { recursive: true });
+      }
 
       await sharp(image.buffer)
         .resize(2000, 1300)

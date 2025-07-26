@@ -5,7 +5,6 @@ const ticketSchema = new Schema<ITicket>(
   {
     phoneNumber: { type: String, required: true },
     message: { type: String, required: true },
-    status: { type: String, default: "sent" },
   },
   {
     timestamps: true,
