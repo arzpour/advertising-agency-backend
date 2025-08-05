@@ -17,10 +17,12 @@ if (fs.existsSync(".env")) {
   console.warn("⚠️ .env not found — relying on Render environment variables.");
 }
 
+
 import connectToDatabase from "./database/database-connection";
 import { createServer } from "node:http";
 import { app } from "./app";
 import { join } from "node:path";
+
 
 connectToDatabase();
 const port = process.env.PORT;
