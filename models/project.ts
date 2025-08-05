@@ -16,7 +16,7 @@ const projectSchema = new Schema<IProject>(
     },
     category: {
       type: Schema.Types.ObjectId,
-      ref: "Category",
+      ref: "category",
       required: [true, "category is required"],
     },
     thumbnail: {

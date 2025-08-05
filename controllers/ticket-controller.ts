@@ -16,7 +16,7 @@ const getTickets = async (req: Request, res: Response, next: NextFunction) => {
       .filter()
       .sort();
 
-    const tickets = ticketModel.getQuery();
+    const tickets = await ticketModel.getQuery().lean();
 
     const { page = 1, limit = 10 } = req.query;
 
@@ -25,7 +25,7 @@ const getTickets = async (req: Request, res: Response, next: NextFunction) => {
       req.query as IQueryString
     ).filter();
 
-    const total = await totalModels.getQuery();
+    const total = await totalModels.getQuery().lean();
 
     const totalPages = Math.ceil(total.length / Number(limit));
 
@@ -71,7 +71,7 @@ const getTicketById = async (
 
 const addTicket = async (req: Request, res: Response, next: NextFunction) => {
   try {
-    const { userId, phoneNumber, message, status } = req.body;
+    const { phoneNumber, message } = req.body;
 
     const isTicketExist = await Ticket.exists({ message, phoneNumber });
 
@@ -80,10 +80,8 @@ const addTicket = async (req: Request, res: Response, next: NextFunction) => {
     }
 
     const ticket = await Ticket.create({
-      userId,
       phoneNumber,
       message,
-      status,
     });
 
     await ticket.save({ validateModifiedOnly: true });

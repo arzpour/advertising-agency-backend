@@ -2,11 +2,11 @@
   "name": "advertising-agency-backend",
   "version": "1.0.0",
   "description": "",
-  "main": "server.ts",
+  "main": "dist/server.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1",
-    "start": "node server.ts",
-    "dev": "nodemon server.ts"
+    "build": "tsc",
+    "start": "node dist/server.js",
+    "dev": "nodemon --exec ts-node server.ts"
   },
   "keywords": [],
   "author": "",

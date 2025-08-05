@@ -1,8 +1,8 @@
 import { Request, Response, NextFunction } from "express";
 import sharp from "sharp";
 import { join } from "path";
-import { access, unlink } from "fs/promises";
-import { constants } from "fs";
+import { access, unlink, mkdir } from "fs/promises";
+import { constants, existsSync } from "fs";
 import Category from "../models/category";
 import { ApiFeatures } from "../utils/api-features";
 import { AppError } from "../utils/app-error";
@@ -23,6 +23,11 @@ const resizeCategoryIcon = async (
   if (!file) return null;
 
   const iconFilename = `categories-${categoryId}-${Date.now()}.png`;
+  const iconsPath = join(__dirname, "../public/images/categories/icons");
+
+  if (!existsSync(iconsPath)) {
+    await mkdir(iconsPath, { recursive: true });
+  }
 
   await sharp(file.buffer)
     .resize(50, 50)

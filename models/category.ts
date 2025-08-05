@@ -13,7 +13,6 @@ const categorySchema = new Schema<ICategory>(
     icon: {
       type: String,
       trim: true,
-      required: [true, "icon is required"],
       default: "categories-icons-default.png",
     },
   },

@@ -1,7 +1,7 @@
 import dotenv from "dotenv";
 const dotenvConfig = dotenv.config();
 
-if (!!dotenvConfig.error) {
+if (dotenvConfig.error) {
   console.error(`[-] dotenv config > ${dotenvConfig.error}`);
 
   console.info("[i] proccess terminated");

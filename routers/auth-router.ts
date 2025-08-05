@@ -10,7 +10,6 @@ import {
   generateAccessToken,
   login,
   logout,
-  protect,
   signup,
 } from "../controllers/auth-controller";
 
@@ -28,7 +27,7 @@ router.post(
   asyncHandler(signup)
 );
 
-router.get("/logout", protect, asyncHandler(logout));
+router.get("/logout", asyncHandler(logout));
 
 router.post(
   "/token",

@@ -148,7 +148,7 @@ const editProjectById = async (
 
     const duplicateProject = await Project.findOne({ name: projectName });
 
-    if (!!duplicateProject && duplicateProject?.name !== project?.name) {
+    if (duplicateProject && duplicateProject.name !== project.name) {
       return next(
         new AppError(
           409,
@@ -157,62 +157,80 @@ const editProjectById = async (
       );
     }
 
-    let category = await Category.findById(categoryId);
-
-    if (!category && !!categoryId) {
-      return next(new AppError(404, `category: ${categoryId} not found`));
+    let category = null;
+    if (categoryId) {
+      category = await Category.findById(categoryId);
+      if (!category) {
+        return next(new AppError(404, `category: ${categoryId} not found`));
+      }
     }
 
-    category ??= project?.category;
+    category = category ?? project.category;
 
     if (!category) {
       return next(new AppError(400, `category not provided or found`));
     }
 
-    const thumbnail = await resizeThumbnail(
-      "projects",
-      projectId,
-      req.files as IUploadFiles
-    );
+    const hasNewFiles = req.files && Object.keys(req.files).length > 0;
 
-    if (!!thumbnail && project?.thumbnail !== thumbnailsDefault("projects")) {
-      await access(
-        join(
-          __dirname,
-          "../public/images/projects/thumbnails",
-          project?.thumbnail
-        ),
-        constants.F_OK
+    let thumbnail = null;
+    if (hasNewFiles) {
+      thumbnail = await resizeThumbnail(
+        "projects",
+        projectId,
+        req.files as IUploadFiles
       );
-      await unlink(
-        join(
-          __dirname,
-          "../public/images/projects/thumbnails",
-          project?.thumbnail
-        )
-      );
+
+      if (
+        thumbnail &&
+        project.thumbnail &&
+        project.thumbnail !== thumbnailsDefault("projects")
+      ) {
+        try {
+          await access(
+            join(
+              __dirname,
+              "../public/images/projects/thumbnails",
+              project.thumbnail
+            ),
+            constants.F_OK
+          );
+          await unlink(
+            join(
+              __dirname,
+              "../public/images/projects/thumbnails",
+              project.thumbnail
+            )
+          );
+        } catch {}
+      }
     }
 
-    const images = await resizeImages(
-      "projects",
-      projectId,
-      req.files as IUploadFiles
-    );
+    let images: string[] = [];
+    if (hasNewFiles) {
+      images = await resizeImages(
+        "projects",
+        projectId,
+        req.files as IUploadFiles
+      );
 
-    const defaultImages = imagesDefault("projects");
-    const hasDefaultImages = defaultImages.every((img) =>
-      project.images.includes(img)
-    );
+      const defaultImages = imagesDefault("projects");
+      const hasDefaultImages = defaultImages.every((img) =>
+        project.images.includes(img)
+      );
 
-    if (!hasDefaultImages) {
-      for (const image of project.images) {
-        await access(
-          join(__dirname, "../public/images/projects/images", image),
-          constants.F_OK
-        );
-        await unlink(
-          join(__dirname, "../public/images/projects/images", image)
-        );
+      if (!hasDefaultImages) {
+        for (const image of project.images) {
+          try {
+            await access(
+              join(__dirname, "../public/images/projects/images", image),
+              constants.F_OK
+            );
+            await unlink(
+              join(__dirname, "../public/images/projects/images", image)
+            );
+          } catch {}
+        }
       }
     }
 
@@ -220,7 +238,7 @@ const editProjectById = async (
     project.name = projectName ?? project.name;
     project.description = description ?? project.description;
     project.thumbnail = thumbnail ?? project.thumbnail;
-    project.images = images.length ? images : project.images;
+    project.images = images.length > 0 ? images : project.images;
 
     await project.save({ validateBeforeSave: true });
 

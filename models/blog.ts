@@ -7,7 +7,7 @@ const blogSchema = new Schema<IBlog>(
     description: String,
     category: {
       type: Schema.Types.ObjectId,
-      ref: "Category",
+      ref: "category",
       required: [true, "category is required"],
     },
     thumbnail: {
