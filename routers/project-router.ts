@@ -1,6 +1,7 @@
 import { Router } from "express";
 import {
   addProject,
+  editOrderProjects,
   editProjectById,
   getProjectById,
   getProjects,
@@ -9,7 +10,10 @@ import {
 import { uploadImages } from "../utils/upload-images";
 import asyncHandler from "../utils/async-handler";
 import validator from "../validations/validator";
-import projectValidationSchema from "../validations/project-validation";
+import {
+  projectValidationSchema,
+  editOrdersValidationSchema,
+} from "../validations/project-validation";
 
 const router = Router();
 
@@ -21,6 +25,11 @@ router.post(
   asyncHandler(addProject)
 );
 router.get("/:id", asyncHandler(getProjectById));
+router.patch(
+  "/editOrder",
+  validator(editOrdersValidationSchema),
+  asyncHandler(editOrderProjects)
+);
 router.patch(
   "/:id",
   uploadImages,

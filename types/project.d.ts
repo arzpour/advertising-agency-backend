@@ -4,6 +4,7 @@ export interface IProject extends Document {
   category: ObjectId;
   thumbnail: string;
   images: string[];
+  order: number;
   createdAt: Date;
   updatedAt: Date;
 }

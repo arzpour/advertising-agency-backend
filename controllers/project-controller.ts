@@ -22,10 +22,9 @@ const getProjects = async (req: Request, res: Response, next: NextFunction) => {
     )
       .limitFields()
       .paginate()
-      .filter()
-      .sort();
+      .filter();
 
-    const projects = await projectModel.getQuery();
+    const projects = await projectModel.getQuery().sort({ order: 1 });
 
     const { page = 1, limit = 10 } = req.query;
 
@@ -94,10 +93,14 @@ const addProject = async (req: Request, res: Response, next: NextFunction) => {
       return next(new AppError(404, `category: ${categoryId} not found`));
     }
 
+    const lastProject = await Project.findOne().sort("-order").exec();
+    const nextOrder = lastProject ? lastProject.order + 1 : 1;
+
     const project = await Project.create({
       name: projectName,
       description,
       category: categoryId,
+      order: nextOrder,
     });
 
     const thumbnail = await resizeThumbnail(
@@ -313,10 +316,41 @@ const removeProjectById = async (
   }
 };
 
+const editOrderProjects = async (
+  req: Request,
+  res: Response,
+  next: NextFunction
+) => {
+  try {
+    const { orders } = req.body;
+
+    if (!orders || !Array.isArray(orders)) {
+      return next(new AppError(400, "Invalid orders format"));
+    }
+
+    const bulkOps = orders.map((item) => ({
+      updateOne: {
+        filter: { _id: item.id },
+        update: { $set: { order: item.order } },
+      },
+    }));
+
+    await Project.bulkWrite(bulkOps);
+
+    res.status(200).json({
+      status: "success",
+      message: "Orders updated successfully",
+    });
+  } catch (error) {
+    next(error);
+  }
+};
+
 export {
   getProjects,
   getProjectById,
   addProject,
   editProjectById,
   removeProjectById,
+  editOrderProjects,
 };

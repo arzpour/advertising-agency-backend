@@ -29,6 +29,11 @@ const projectSchema = new Schema<IProject>(
       trim: true,
       default: ["projects-images-default.jpeg"],
     },
+    order: {
+      type: Number,
+      required: true,
+      default: 0,
+    },
   },
   {
     timestamps: true,
