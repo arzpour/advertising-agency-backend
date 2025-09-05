@@ -20,6 +20,11 @@ const blogSchema = new Schema<IBlog>(
       trim: true,
       default: ["blogs-images-default.jpeg"],
     },
+     order: {
+      type: Number,
+      required: true,
+      default: 0,
+    },
   },
   {
     timestamps: true,

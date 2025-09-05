@@ -6,10 +6,12 @@ import {
   getBlogById,
   getBlogs,
   removeBlogById,
+  editOrderBlogs,
 } from "../controllers/blog-controller";
 import validator from "../validations/validator";
 import blogValidationSchema from "../validations/blog-validation";
 import { uploadImages } from "../utils/upload-images";
+import editOrdersValidationSchema from "../validations/global-validation";
 
 const router = Router();
 
@@ -21,6 +23,11 @@ router.post(
   asyncHandler(addBlog)
 );
 router.get("/:id", asyncHandler(getBlogById));
+router.patch(
+  "/editOrder",
+  validator(editOrdersValidationSchema),
+  asyncHandler(editOrderBlogs)
+);
 router.patch(
   "/:id",
   uploadImages,

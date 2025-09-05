@@ -22,10 +22,9 @@ const getBlogs = async (req: Request, res: Response, next: NextFunction) => {
     )
       .limitFields()
       .paginate()
-      .filter()
-      .sort();
+      .filter();
 
-    const blogs = await blogModel.getQuery();
+    const blogs = await blogModel.getQuery().sort({ order: 1 });
 
     const { page = 1, limit = 10 } = req.query;
 
@@ -90,10 +89,14 @@ const addBlog = async (req: Request, res: Response, next: NextFunction) => {
       return next(new AppError(404, `category: ${categoryId} not found`));
     }
 
+    const lastBlog = await Blog.findOne().sort("-order").exec();
+    const nextOrder = lastBlog ? lastBlog.order + 1 : 1;
+
     const blog = await Blog.create({
       name: blogName,
       description,
       category: categoryId,
+      order: nextOrder,
     });
 
     const thumbnail = await resizeThumbnail(
@@ -277,4 +280,44 @@ const removeBlogById = async (
   }
 };
 
-export { getBlogs, getBlogById, addBlog, editBlogById, removeBlogById };
+const editOrderBlogs = async (
+  req: Request,
+  res: Response,
+  next: NextFunction
+) => {
+  try {
+    const { orders } = req.body;
+
+    if (!orders || !Array.isArray(orders)) {
+      return next(new AppError(400, "Invalid orders format"));
+    }
+
+    const bulkOps = orders.map((item) => ({
+      updateOne: {
+        filter: { _id: item.id },
+        update: { $set: { order: item.order } },
+      },
+    }));
+
+    await Blog.bulkWrite(bulkOps);
+
+    const updated = await Blog.find().sort({ order: 1 });
+
+    res.status(200).json({
+      status: "success",
+      message: "Orders updated successfully",
+      data: { blogs: updated },
+    });
+  } catch (error) {
+    next(error);
+  }
+};
+
+export {
+  getBlogs,
+  getBlogById,
+  addBlog,
+  editBlogById,
+  removeBlogById,
+  editOrderBlogs,
+};
