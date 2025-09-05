@@ -5,6 +5,7 @@ import validator from "../validations/validator";
 import {
   addCategory,
   editCategoryById,
+  editOrderCategories,
   getAllCategories,
   getCategoryById,
   removeCategoryById,
@@ -14,6 +15,7 @@ import {
   addCategoryValidationSchema,
   editCategoryValidationSchema,
 } from "../validations/category-validation";
+import editOrdersValidationSchema from "../validations/global-validation";
 
 const router = Router();
 
@@ -28,6 +30,11 @@ router.post(
 
 router.get("/:id", asyncHandler(getCategoryById));
 
+router.patch(
+  "/editOrder",
+  validator(editOrdersValidationSchema),
+  asyncHandler(editOrderCategories)
+);
 router.patch(
   "/:id",
   uploadCategoryIcon,

@@ -336,10 +336,12 @@ const editOrderProjects = async (
     }));
 
     await Project.bulkWrite(bulkOps);
+    const updated = await Project.find().sort({ order: 1 });
 
     res.status(200).json({
       status: "success",
       message: "Orders updated successfully",
+      data: { projects: updated },
     });
   } catch (error) {
     next(error);

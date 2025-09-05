@@ -10,10 +10,8 @@ import {
 import { uploadImages } from "../utils/upload-images";
 import asyncHandler from "../utils/async-handler";
 import validator from "../validations/validator";
-import {
-  projectValidationSchema,
-  editOrdersValidationSchema,
-} from "../validations/project-validation";
+import projectValidationSchema from "../validations/project-validation";
+import editOrdersValidationSchema from "../validations/global-validation";
 
 const router = Router();
 

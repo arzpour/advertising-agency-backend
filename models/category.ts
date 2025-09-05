@@ -15,6 +15,11 @@ const categorySchema = new Schema<ICategory>(
       trim: true,
       default: "categories-icons-default.png",
     },
+     order: {
+      type: Number,
+      required: true,
+      default: 0,
+    },
   },
   {
     timestamps: true,

@@ -54,10 +54,9 @@ const getAllCategories = async (
   )
     .limitFields()
     .paginate()
-    .filter()
-    .sort();
+    .filter();
 
-  const categories = await categoriesModel.getQuery();
+  const categories = await categoriesModel.getQuery().sort({ order: 1 });
 
   const totalModels = new ApiFeatures(
     Category.find(),
@@ -90,7 +89,14 @@ const addCategory = async (req: Request, res: Response, next: NextFunction) => {
     );
   }
 
-  const category = await Category.create({ name: categoryName, description });
+  const lastCategory = await Category.findOne().sort("-order").exec();
+  const nextOrder = lastCategory ? lastCategory.order + 1 : 1;
+
+  const category = await Category.create({
+    name: categoryName,
+    description,
+    order: nextOrder,
+  });
 
   const icon = await resizeCategoryIcon(category._id.toString(), req.file);
   category.icon = icon ?? categoriesIconsDefault;
@@ -211,6 +217,39 @@ const removeCategoryById = async (
   });
 };
 
+const editOrderCategories = async (
+  req: Request,
+  res: Response,
+  next: NextFunction
+) => {
+  try {
+    const { orders } = req.body;
+
+    if (!orders || !Array.isArray(orders)) {
+      return next(new AppError(400, "Invalid orders format"));
+    }
+
+    const bulkOps = orders.map((item) => ({
+      updateOne: {
+        filter: { _id: item.id },
+        update: { $set: { order: item.order } },
+      },
+    }));
+
+    await Category.bulkWrite(bulkOps);
+
+    const updated = await Category.find().sort({ order: 1 });
+
+    res.status(200).json({
+      status: "success",
+      message: "Orders updated successfully",
+      data: { categories: updated },
+    });
+  } catch (error) {
+    next(error);
+  }
+};
+
 export {
   addCategory,
   getAllCategories,
@@ -219,4 +258,5 @@ export {
   removeCategoryById,
   resizeCategoryIcon,
   uploadCategoryIcon,
+  editOrderCategories,
 };
