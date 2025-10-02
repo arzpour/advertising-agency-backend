@@ -77,9 +77,9 @@ const addBlog = async (req: Request, res: Response, next: NextFunction) => {
   try {
     const { name: blogName, description, category: categoryId } = req.body;
 
-    const isBlogExist = await Blog.exists({ blogName });
+    const isBlogExist = await Blog.exists({ name: blogName });
 
-    if (!!isBlogExist) {
+    if (isBlogExist) {
       return next(new AppError(409, "blog name already exists"));
     }
 
@@ -254,7 +254,7 @@ const removeBlogById = async (
       );
     }
 
-    const defaultImages = await imagesDefault("blogs");
+    const defaultImages = imagesDefault("blogs");
     const hasDefaultImages = defaultImages.every((img) =>
       blog.images.includes(img)
     );

@@ -75,7 +75,7 @@ const addTicket = async (req: Request, res: Response, next: NextFunction) => {
 
     const isTicketExist = await Ticket.exists({ message, phoneNumber });
 
-    if (!!isTicketExist) {
+    if (isTicketExist) {
       return next(new AppError(409, "this ticket already exists"));
     }
 

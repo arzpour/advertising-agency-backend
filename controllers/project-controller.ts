@@ -81,9 +81,9 @@ const addProject = async (req: Request, res: Response, next: NextFunction) => {
   try {
     const { name: projectName, description, category: categoryId } = req.body;
 
-    const isProjectExist = await Project.exists({ projectName });
+    const isProjectExist = await Project.exists({ name: projectName });
 
-    if (!!isProjectExist) {
+    if (isProjectExist) {
       return next(new AppError(409, "project title already exists"));
     }
 
@@ -288,7 +288,7 @@ const removeProjectById = async (
       );
     }
 
-    const defaultImages = await imagesDefault("projects");
+    const defaultImages = imagesDefault("projects");
     const hasDefaultImages = defaultImages.every((img) =>
       project.images.includes(img)
     );

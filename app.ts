@@ -19,6 +19,7 @@ app.use(bodyParser.json());
 app.use(express.urlencoded({ extended: true }));
 
 app.use(express.static(join(__dirname, "./public")));
+// app.use("/api/images", express.static(join(__dirname, "./public/images")));
 
 // routers
 app.use("/api", apiRouters);
