@@ -7,7 +7,7 @@ import { ApiFeatures } from "../utils/api-features";
 import { AppError } from "../utils/app-error";
 import { IQueryString } from "../types/global";
 import multerUpload from "../utils/multer-config";
-import Services from "../models/services";
+import Service from "../models/services";
 
 // default icon name
 const servicesIconsDefault = "services-icons-default.png";
@@ -47,7 +47,7 @@ const getAllServices = async (
   const { page = "1", limit = "10" } = req.query;
 
   const servicesModel = new ApiFeatures(
-    Services.find(),
+    Service.find(),
     req.query as IQueryString
   )
     .limitFields()
@@ -57,7 +57,7 @@ const getAllServices = async (
   const services = await servicesModel.getQuery().sort({ order: 1 });
 
   const totalModels = new ApiFeatures(
-    Services.find(),
+    Service.find(),
     req.query as IQueryString
   ).filter();
   const total = await totalModels.getQuery();
@@ -77,7 +77,7 @@ const getAllServices = async (
 const addService = async (req: Request, res: Response, next: NextFunction) => {
   const { name: serviceName, description } = req.body;
 
-  const isServiceExists = await Services.exists({ name: serviceName });
+  const isServiceExists = await Service.exists({ name: serviceName });
   if (isServiceExists) {
     return next(
       new AppError(
@@ -87,10 +87,10 @@ const addService = async (req: Request, res: Response, next: NextFunction) => {
     );
   }
 
-  const lastService = await Services.findOne().sort("-order").exec();
+  const lastService = await Service.findOne().sort("-order").exec();
   const nextOrder = lastService ? lastService.order + 1 : 1;
 
-  const service = await Services.create({
+  const service = await Service.create({
     name: serviceName,
     description,
     order: nextOrder,
@@ -115,7 +115,7 @@ const getServiceById = async (
 ) => {
   const { id: serviceId } = req.params;
 
-  const service = await Services.findById(serviceId);
+  const service = await Service.findById(serviceId);
   if (!service) {
     return next(new AppError(404, `service: ${serviceId} not found`));
   }
@@ -135,12 +135,12 @@ const editServiceById = async (
   const { id: serviceId } = req.params;
   const { name: serviceName = null, description = null } = req.body;
 
-  const service = await Services.findById(serviceId);
+  const service = await Service.findById(serviceId);
   if (!service) {
     return next(new AppError(404, `service: ${serviceId} not found`));
   }
 
-  const duplicateService = await Services.findOne({ name: serviceName });
+  const duplicateService = await Service.findOne({ name: serviceName });
   if (duplicateService && duplicateService.name !== service.name) {
     return next(
       new AppError(
@@ -188,7 +188,7 @@ const removeServiceById = async (
 ) => {
   const { id: serviceId } = req.params;
 
-  const service = await Services.findByIdAndDelete(serviceId);
+  const service = await Service.findByIdAndDelete(serviceId);
   if (!service) {
     return next(new AppError(404, `service: ${serviceId} not found`));
   }
@@ -234,9 +234,9 @@ const editOrderServices = async (
       },
     }));
 
-    await Services.bulkWrite(bulkOps);
+    await Service.bulkWrite(bulkOps);
 
-    const updated = await Services.find().sort({ order: 1 });
+    const updated = await Service.find().sort({ order: 1 });
 
     res.status(200).json({
       status: "success",
@@ -256,5 +256,5 @@ export {
   editServiceById,
   resizeServiceIcon,
   uploadServicesIcon,
-  removeServiceById
+  removeServiceById,
 };

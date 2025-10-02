@@ -1,7 +1,7 @@
 import { model, Schema } from "mongoose";
-import { IService } from "../types/service";
+import { ICustomer } from "../types/customer";
 
-const serviceSchema = new Schema<IService>(
+const customerSchema = new Schema<ICustomer>(
   {
     name: {
       type: String,
@@ -9,11 +9,10 @@ const serviceSchema = new Schema<IService>(
       unique: true,
       required: [true, "name is required"],
     },
-    description: String,
     icon: {
       type: String,
       trim: true,
-      default: "services-icons-default.png",
+      required: [true, "icon is required"],
     },
     order: {
       type: Number,
@@ -26,6 +25,6 @@ const serviceSchema = new Schema<IService>(
   }
 );
 
-const Service = model<IService>("service", serviceSchema);
+const Customer = model<ICustomer>("customer", customerSchema);
 
-export default Service;
+export default Customer;
