@@ -79,10 +79,6 @@ const getAllCustomers = async (
 const addCustomer = async (req: Request, res: Response, next: NextFunction) => {
   const { name: customerName } = req.body;
 
-  if (!req.file) {
-    return next(new AppError(400, "Icon is required"));
-  }
-
   const isCustomerExists = await Customer.exists({ name: customerName });
   if (isCustomerExists) {
     return next(

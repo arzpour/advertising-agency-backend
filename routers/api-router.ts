@@ -4,7 +4,8 @@ import blogRouters from "./blog-router";
 import ticketRouters from "./ticket-router";
 import authRouter from "./auth-router";
 import serviceRouter from "./service-router";
-// import categoryRouter from "./category-router";
+import categoryRouter from "./category-router";
+import customerRouter from "./customer-router";
 
 const router = Router();
 
@@ -13,6 +14,7 @@ router.use("/projects", projectRouters);
 router.use("/blogs", blogRouters);
 router.use("/tickets", ticketRouters);
 router.use("/services", serviceRouter);
-// router.use("/categories", categoryRouter);
+router.use("/categories", categoryRouter);
+router.use("/customers", customerRouter);
 
 export default router;

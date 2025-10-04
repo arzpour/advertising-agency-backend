@@ -48,14 +48,17 @@ const getAllCategories = async (
 ) => {
   const { page = "1", limit = "10", type } = req.query;
 
-  if (!type || !["project", "blog"].includes(type as string)) {
-    return next(
-      new AppError(400, "type query param (project | blog) required")
-    );
+  const filter: Record<string, any> = {};
+
+  if (type) {
+    if (!["project", "blog"].includes(type as string)) {
+      return next(new AppError(400, "Invalid category type"));
+    }
+    filter.type = type;
   }
 
   const categoriesModel = new ApiFeatures(
-    Category.find({ type }),
+    Category.find(filter),
     req.query as IQueryString
   )
     .limitFields()
@@ -65,7 +68,7 @@ const getAllCategories = async (
   const categories = await categoriesModel.getQuery().sort({ order: 1 });
 
   const totalModels = new ApiFeatures(
-    Category.find({ type }),
+    Category.find(filter),
     req.query as IQueryString
   ).filter();
   const total = await totalModels.getQuery();

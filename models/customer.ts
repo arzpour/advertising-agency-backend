@@ -12,7 +12,7 @@ const customerSchema = new Schema<ICustomer>(
     icon: {
       type: String,
       trim: true,
-      required: [true, "icon is required"],
+      default: "customers-icons-default.png",
     },
     order: {
       type: Number,
