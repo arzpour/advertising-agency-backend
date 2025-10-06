@@ -48,27 +48,34 @@ const getAllCategories = async (
 ) => {
   const { page = "1", limit = "10", type } = req.query;
 
-  const filter: Record<string, any> = {};
-
-  if (type) {
-    if (!["project", "blog"].includes(type as string)) {
-      return next(new AppError(400, "Invalid category type"));
-    }
-    filter.type = type;
+  if (!type || !["project", "blog", "all"].includes(type as string)) {
+    return next(
+      new AppError(400, "type query param (project | blog) required")
+    );
   }
-
-  const categoriesModel = new ApiFeatures(
-    Category.find(filter),
-    req.query as IQueryString
-  )
-    .limitFields()
-    .paginate()
-    .filter();
+  let categoriesModel;
+  if (type === "all") {
+    categoriesModel = new ApiFeatures(
+      Category.find(),
+      req.query as IQueryString
+    )
+      .limitFields()
+      .paginate()
+      .filter();
+  } else {
+    categoriesModel = new ApiFeatures(
+      Category.find({ type }),
+      req.query as IQueryString
+    )
+      .limitFields()
+      .paginate()
+      .filter();
+  }
 
   const categories = await categoriesModel.getQuery().sort({ order: 1 });
 
   const totalModels = new ApiFeatures(
-    Category.find(filter),
+    Category.find({ type }),
     req.query as IQueryString
   ).filter();
   const total = await totalModels.getQuery();
@@ -233,6 +240,39 @@ const removeCategoryById = async (
   });
 };
 
+const editOrderCategories = async (
+  req: Request,
+  res: Response,
+  next: NextFunction
+) => {
+  try {
+    const { orders } = req.body;
+
+    if (!orders || !Array.isArray(orders)) {
+      return next(new AppError(400, "Invalid orders format"));
+    }
+
+    const bulkOps = orders.map((item) => ({
+      updateOne: {
+        filter: { _id: item.id },
+        update: { $set: { order: item.order } },
+      },
+    }));
+
+    await Category.bulkWrite(bulkOps);
+
+    const updated = await Category.find().sort({ order: 1 });
+
+    res.status(200).json({
+      status: "success",
+      message: "Orders updated successfully",
+      data: { service: updated },
+    });
+  } catch (error) {
+    next(error);
+  }
+};
+
 export {
   addCategory,
   getAllCategories,
@@ -241,4 +281,5 @@ export {
   removeCategoryById,
   resizeCategoryIcon,
   uploadCategoryIcon,
+  editOrderCategories,
 };
