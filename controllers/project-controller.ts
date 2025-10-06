@@ -295,13 +295,14 @@ const removeProjectById = async (
 
     if (!hasDefaultImages) {
       for (const image of project.images) {
-        await access(
-          join(__dirname, "../public/images/projects/images", image),
-          constants.F_OK
+        const filePath = join(
+          __dirname,
+          "../public/images/projects/images",
+          image
         );
-        await unlink(
-          join(__dirname, "../public/images/projects/images", image)
-        );
+
+        await access(filePath, constants.F_OK);
+        await unlink(filePath);
       }
     }
 
@@ -310,9 +311,10 @@ const removeProjectById = async (
       data: { project },
     });
   } catch (error) {
-    if (error instanceof Error) {
-      return next(new AppError(500, error.message));
-    }
+    console.log("🚀 ~ removeProjectById ~ error:", error);
+    // if (error instanceof Error) {
+    //   return next(new AppError(500, error.message));
+    // }
   }
 };
 

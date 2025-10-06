@@ -30,12 +30,9 @@ const resizeCategoryIcon = async (
   }
 
   await sharp(file.buffer)
-    .resize(50, 50)
-    .toFormat("png")
-    .png({ quality: 100 })
-    .toFile(
-      join(__dirname, `../public/images/categories/icons/${iconFilename}`)
-    );
+    .resize(200, 200, { fit: "inside" })
+    .png({ quality: 100, compressionLevel: 0, adaptiveFiltering: false })
+    .toFile(join(iconsPath, iconFilename));
 
   return iconFilename;
 };
@@ -220,17 +217,19 @@ const removeCategoryById = async (
 
   if (category.icon !== categoriesIconsDefault) {
     try {
-      await access(
-        join(__dirname, "../public/images/categories/icons", category.icon),
-        constants.F_OK
+      const filePath = join(
+        __dirname,
+        "../public/images/categories/icons",
+        category.icon
       );
-      await unlink(
-        join(__dirname, "../public/images/categories/icons", category.icon)
-      );
+
+      await access(filePath, constants.F_OK);
+      await unlink(filePath);
     } catch (error) {
-      if (error instanceof Error) {
-        return next(new AppError(500, error.message));
-      }
+      console.log("🚀 ~ removeCategoryById ~ error:", error);
+      // if (error instanceof Error) {
+      //   return next(new AppError(500, error.message));
+      // }
     }
   }
 

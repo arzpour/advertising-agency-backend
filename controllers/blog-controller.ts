@@ -245,13 +245,14 @@ const removeBlogById = async (
     }
 
     if (blog.thumbnail !== thumbnailsDefault("blogs")) {
-      await access(
-        join(__dirname, "../public/images/blogs/thumbnails", blog?.thumbnail),
-        constants.F_OK
+      const filePath = join(
+        __dirname,
+        "../public/images/blogs/thumbnails",
+        blog?.thumbnail
       );
-      await unlink(
-        join(__dirname, "../public/images/blogs/thumbnails", blog?.thumbnail)
-      );
+
+      await access(filePath, constants.F_OK);
+      await unlink(filePath);
     }
 
     const defaultImages = imagesDefault("blogs");
@@ -261,11 +262,14 @@ const removeBlogById = async (
 
     if (!hasDefaultImages) {
       for (const image of blog.images) {
-        await access(
-          join(__dirname, "../public/images/blogs/images", image),
-          constants.F_OK
+        const filePath = join(
+          __dirname,
+          "../public/images/blogs/images",
+          image
         );
-        await unlink(join(__dirname, "../public/images/blogs/images", image));
+
+        await access(filePath, constants.F_OK);
+        await unlink(filePath);
       }
     }
 
@@ -274,9 +278,10 @@ const removeBlogById = async (
       data: { blog },
     });
   } catch (error) {
-    if (error instanceof Error) {
-      return next(new AppError(500, error.message));
-    }
+    console.log("🚀 ~ removeBlogById ~ error:", error);
+    // if (error instanceof Error) {
+    //   return next(new AppError(500, error.message));
+    // }
   }
 };
 

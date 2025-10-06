@@ -33,14 +33,9 @@ export const resizeThumbnail = async (
   }
 
   await sharp(thumbnail[0].buffer)
-    .resize(1500, 800)
-    .toFormat("jpeg")
-    .toFile(
-      join(
-        __dirname,
-        `../public/images/${title}/thumbnails/${thumbnailFileName}`
-      )
-    );
+    .resize(200, 200, { fit: "inside" })
+    .png({ quality: 100, compressionLevel: 0, adaptiveFiltering: false })
+    .toFile(join(thumbnailPath, thumbnailFileName));
 
   return thumbnailFileName;
 };
@@ -64,12 +59,9 @@ export const resizeImages = async (
       }
 
       await sharp(image.buffer)
-        .resize(2000, 1300)
-        .toFormat("jpeg")
-        .jpeg({ quality: 95 })
-        .toFile(
-          join(__dirname, `../public/images/${title}/images/${imageFileName}`)
-        );
+        .resize(200, 200, { fit: "inside" })
+        .png({ quality: 100, compressionLevel: 0, adaptiveFiltering: false })
+        .toFile(join(imagesPath, imageFileName));
 
       return imageFileName;
     })

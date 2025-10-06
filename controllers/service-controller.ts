@@ -30,10 +30,9 @@ const resizeServiceIcon = async (
   }
 
   await sharp(file.buffer)
-    .resize(50, 50)
-    .toFormat("png")
-    .png({ quality: 100 })
-    .toFile(join(__dirname, `../public/images/services/icons/${iconFilename}`));
+    .resize(200, 200, { fit: "inside" })
+    .png({ quality: 100, compressionLevel: 0, adaptiveFiltering: false })
+    .toFile(join(iconsPath, iconFilename));
 
   return iconFilename;
 };
@@ -193,19 +192,18 @@ const removeServiceById = async (
     return next(new AppError(404, `service: ${serviceId} not found`));
   }
 
-  if (service.icon !== servicesIconsDefault) {
+  if (service.icon && service.icon !== servicesIconsDefault) {
+    const filePath = join(
+      __dirname,
+      "../public/images/services/icons",
+      service.icon
+    );
     try {
-      await access(
-        join(__dirname, "../public/images/services/icons", service.icon),
-        constants.F_OK
-      );
-      await unlink(
-        join(__dirname, "../public/images/services/icons", service.icon)
-      );
+      await access(filePath, constants.F_OK);
+      await unlink(filePath);
     } catch (error) {
-      if (error instanceof Error) {
-        return next(new AppError(500, error.message));
-      }
+      console.log("🚀 ~ removeServiceById ~ error:", error);
+      console.warn(`File not found or could not be deleted: ${filePath}`);
     }
   }
 
