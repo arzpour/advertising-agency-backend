@@ -29,9 +29,13 @@ const resizeCustomerIcon = async (
     await mkdir(iconsPath, { recursive: true });
   }
 
+  // await sharp(file.buffer)
+  //   .resize(200, 200, { fit: "inside" })
+  //   .png({ quality: 100, compressionLevel: 0, adaptiveFiltering: false })
+  //   .toFile(join(iconsPath, iconFilename));
   await sharp(file.buffer)
-    .resize(200, 200, { fit: "inside" })
-    .png({ quality: 100, compressionLevel: 0, adaptiveFiltering: false })
+    .resize(512, 512, { fit: "inside" })
+    .png({ compressionLevel: 9, adaptiveFiltering: true })
     .toFile(join(iconsPath, iconFilename));
 
   return iconFilename;

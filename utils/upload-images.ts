@@ -32,9 +32,14 @@ export const resizeThumbnail = async (
     await mkdir(thumbnailPath, { recursive: true });
   }
 
+  // await sharp(thumbnail[0].buffer)
+  //   .resize(200, 200, { fit: "inside" })
+  //   .png({ quality: 100, compressionLevel: 0, adaptiveFiltering: false })
+  //   .toFile(join(thumbnailPath, thumbnailFileName));
+
   await sharp(thumbnail[0].buffer)
-    .resize(200, 200, { fit: "inside" })
-    .png({ quality: 100, compressionLevel: 0, adaptiveFiltering: false })
+    .resize(300, 300, { fit: "cover" })
+    .jpeg({ quality: 90 })
     .toFile(join(thumbnailPath, thumbnailFileName));
 
   return thumbnailFileName;
@@ -58,9 +63,13 @@ export const resizeImages = async (
         await mkdir(imagesPath, { recursive: true });
       }
 
+      // await sharp(image.buffer)
+      //   .resize(200, 200, { fit: "inside" })
+      //   .png({ quality: 100, compressionLevel: 0, adaptiveFiltering: false })
+      //   .toFile(join(imagesPath, imageFileName));
       await sharp(image.buffer)
-        .resize(200, 200, { fit: "inside" })
-        .png({ quality: 100, compressionLevel: 0, adaptiveFiltering: false })
+        .resize(1200, null, { fit: "inside" })
+        .jpeg({ quality: 85, chromaSubsampling: "4:4:4" })
         .toFile(join(imagesPath, imageFileName));
 
       return imageFileName;
